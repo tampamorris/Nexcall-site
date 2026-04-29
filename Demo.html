@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexCall AI Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0D0D0D;color:#F5F5F5;font-family:'DM Sans',sans-serif;font-weight:300}
+nav{padding:16px 28px;background:#141414;border-bottom:1px solid #2A2A2A;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem}.logo span{color:#00E5FF}
+.rec{display:flex;align-items:center;gap:7px;font-size:.7rem;color:#FF4444;letter-spacing:.1em}
+.rd{width:8px;height:8px;border-radius:50%;background:#FF4444;animation:bl 1s infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.2}}
+.wrap{max-width:820px;margin:0 auto;padding:36px 20px}
+.top{text-align:center;margin-bottom:32px}
+.top h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,5vw,3rem);line-height:1.1}
+.top h1 span{color:#00E5FF}
+.top p{color:#666;margin-top:10px;font-size:.9rem}
+.win{background:#141414;border:1px solid #2A2A2A;border-radius:6px;overflow:hidden}
+.bar{background:#111;border-bottom:1px solid #2A2A2A;padding:11px 18px;display:flex;align-items:center;gap:10px}
+.live{display:flex;align-items:center;gap:6px;font-size:.68rem;color:#00FF88;background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.2);padding:4px 10px;border-radius:2px;letter-spacing:.08em}
+.ld{width:6px;height:6px;border-radius:50%;background:#00FF88;animation:bl 1.5s infinite}
+.meta{font-size:.65rem;color:#555;letter-spacing:.05em}
+.timer{margin-left:auto;font-size:.72rem;color:#FFB800;font-variant-numeric:tabular-nums}
+.msgs{padding:20px 18px 26px;display:flex;flex-direction:column;gap:16px}
+.m{display:flex;gap:11px;opacity:0;transform:translateY(6px)}
+.m.on{animation:mi .4s ease forwards}
+@keyframes mi{to{opacity:1;transform:none}}
+.m.cx{flex-direction:row-reverse}
+.av{width:32px;height:32px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;font-weight:600}
+.m.ai .av{background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.25);color:#00E5FF}
+.m.cx .av{background:rgba(255,255,255,0.04);border:1px solid #2A2A2A;color:#777}
+.mc{max-width:76%}
+.name{font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.m.ai .name{color:#00E5FF}.m.cx .name{color:#555;text-align:right}
+.bub{padding:11px 14px;font-size:.88rem;line-height:1.6;border-radius:2px}
+.m.ai .bub{background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.12);border-left:2px solid #00E5FF}
+.m.cx .bub{background:rgba(255,255,255,0.03);border:1px solid #2A2A2A;color:#AAA;border-right:2px solid #333}
+.typ{display:flex;gap:11px;opacity:0;transition:opacity .3s}
+.typ.on{opacity:1}
+.dots{display:flex;gap:5px;padding:12px 14px;background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.12);border-left:2px solid #00E5FF;border-radius:2px}
+.dots span{width:6px;height:6px;border-radius:50%;background:#00E5FF;opacity:.3;animation:dt 1.2s ease infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dt{0%,60%,100%{opacity:.2;transform:none}30%{opacity:1;transform:translateY(-4px)}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.card{background:#141414;border:1px solid #2A2A2A;border-radius:6px;padding:16px}
+.ctit{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#555;margin-bottom:12px}
+.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.82rem}
+.row:last-child{border:none}
+.rk{color:#666}.rv{font-size:.76rem}
+.rv.g{color:#00FF88}.rv.a{color:#FFB800}.rv.e{color:#00E5FF}
+.ac{background:#141414;border:1px solid rgba(0,255,136,0.2);border-left:3px solid #00FF88;border-radius:4px;padding:14px 16px;display:flex;align-items:center;gap:12px;opacity:0;transform:translateY(6px);transition:all .5s;margin-top:12px}
+.ac.on{opacity:1;transform:none}
+.ai2{width:36px;height:36px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.at{font-size:.6rem;letter-spacing:.1em;color:#00FF88;text-transform:uppercase;margin-bottom:3px}
+.ad{font-size:.82rem;color:#777}
+.ck{color:#00FF88;margin-left:auto;flex-shrink:0}
+.cta{text-align:center;padding:52px 20px 60px;opacity:0;transform:translateY(12px);transition:all .6s}
+.cta.on{opacity:1;transform:none}
+.cta h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,5vw,2.8rem);margin-bottom:8px}
+.cta h2 span{color:#00E5FF}
+.cta p{color:#666;margin-bottom:24px;font-size:.9rem}
+.btn{display:inline-block;background:#00E5FF;color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;letter-spacing:.08em;padding:14px 40px;border-radius:2px;text-decoration:none;transition:all .2s}
+.btn:hover{box-shadow:0 0 32px rgba(0,229,255,0.4);transform:translateY(-2px)}
+.note{margin-top:12px;font-size:.76rem;color:#555}
+.rpl{position:fixed;bottom:18px;right:18px;background:#141414;border:1px solid #2A2A2A;color:#555;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:2px;cursor:pointer;transition:all .2s}
+.rpl:hover{border-color:#00E5FF;color:#00E5FF}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Nex<span>Call</span> AI</div>
+  <div class="rec"><span class="rd"></span>REC</div>
+</nav>
+<div class="wrap">
+  <div class="top">
+    <h1>AI Agent Handles<br><span>Auto Repair Call</span></h1>
+    <p>Status update · Upsell detected · Ticket upgraded from $89 → $234</p>
+  </div>
+  <div class="win">
+    <div class="bar">
+      <div class="live"><span class="ld"></span>LIVE CALL</div>
+      <span class="meta">INBOUND · AUTO REPAIR PRO</span>
+      <span class="timer" id="tmr">00:00</span>
+    </div>
+    <div class="msgs" id="msgs">
+      <div class="m ai" id="m1"><div class="av">AI</div><div class="mc"><div class="name">NexCall Agent · Alex</div><div class="bub">Thank you for calling Auto Repair Pro! This is Alex. How can I help you today?</div></div></div>
+      <div class="m cx" id="m2"><div class="av">CX</div><div class="mc"><div class="name">Customer</div><div class="bub">Hi — I dropped my 2019 Honda Civic off yesterday. Is it ready yet?</div></div></div>
+      <div class="m ai" id="m3"><div class="av">AI</div><div class="mc"><div class="name">NexCall Agent · Alex</div><div class="bub">Let me pull that up! Can I get your last name or the phone number on the account?</div></div></div>
+      <div class="m cx" id="m4"><div class="av">CX</div><div class="mc"><div class="name">Customer</div><div class="bub">Martinez. Mike Martinez.</div></div></div>
+      <div class="m ai" id="m5"><div class="av">AI</div><div class="mc"><div class="name">NexCall Agent · Alex</div><div class="bub">Got it Mike. Your oil change is done and ready — but our tech flagged your rear brake pads at 15%. Your current total is $89.</div></div></div>
+      <div class="m cx" id="m6"><div class="av">CX</div><div class="mc"><div class="name">Customer</div><div class="bub">15%? That's low. How much to do the brakes now?</div></div></div>
+      <div class="m ai" id="m7"><div class="av">AI</div><div class="mc"><div class="name">NexCall Agent · Alex</div><div class="bub">Rear brake pads are $145 parts and labor. Car's already here so no extra drop-off — done by 4 PM today. Want me to add that on?</div></div></div>
+      <div class="m cx" id="m8"><div class="av">CX</div><div class="mc"><div class="name">Customer</div><div class="bub">Yeah let's do it — makes sense while it's already there.</div></div></div>
+      <div class="m ai" id="m9"><div class="av">AI</div><div class="mc"><div class="name">NexCall Agent · Alex</div><div class="bub">Done! Updated total is $234, ready by 4 PM. I'll text you when it's done. Anything else, Mike?</div></div></div>
+      <div class="m cx" id="m10"><div class="av">CX</div><div class="mc"><div class="name">Customer</div><div class="bub">No that's great, thanks!</div></div></div>
+      <div class="typ" id="typ"><div class="av" style="width:32px;height:32px;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.25);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#00E5FF;flex-shrink:0;font-weight:600;">AI</div><div class="dots"><span></span><span></span><span></span></div></div>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="ctit">Call Intelligence</div>
+      <div class="row"><span class="rk">Caller</span><span class="rv">Mike Martinez</span></div>
+      <div class="row"><span class="rk">Vehicle</span><span class="rv">2019 Honda Civic</span></div>
+      <div class="row"><span class="rk">Intent</span><span class="rv e">Status Check</span></div>
+      <div class="row"><span class="rk">Upsell</span><span class="rv a">Brake Pads</span></div>
+      <div class="row"><span class="rk">Outcome</span><span class="rv g">Closed ✓</span></div>
+    </div>
+    <div class="card">
+      <div class="ctit">Revenue Impact</div>
+      <div class="row"><span class="rk">Original</span><span class="rv">$89.00</span></div>
+      <div class="row"><span class="rk">Upsell</span><span class="rv g">+$145.00</span></div>
+      <div class="row"><span class="rk">Final Ticket</span><span class="rv e">$234.00</span></div>
+      <div class="row"><span class="rk">Revenue Lift</span><span class="rv a">+163%</span></div>
+    </div>
+  </div>
+  <div class="ac" id="a1"><div class="ai2">📋</div><div><div class="at">CRM Updated</div><div class="ad">Work order updated — brake job added, pickup 4 PM</div></div><div class="ck">✓</div></div>
+  <div class="ac" id="a2"><div class="ai2">📱</div><div><div class="at">SMS Sent</div><div class="ad">"Hi Mike, Civic ready at 4 PM. Total: $234. — Auto Repair Pro"</div></div><div class="ck">✓</div></div>
+  <div class="ac" id="a3"><div class="ai2">💰</div><div><div class="at">Upsell Captured</div><div class="ad">$145 brake service closed — no human needed</div></div><div class="ck">✓</div></div>
+  <div class="cta" id="cta">
+    <h2>Book Your <span>Free Demo</span></h2>
+    <p>See your AI agent on your actual calls — live in 48 hours.</p>
+    <a href="mailto:Tampamorris@gmail.com" class="btn">BOOK A FREE DEMO</a>
+    <p class="note">No credit card · No commitment · (813) 444-8663</p>
+  </div>
+</div>
+<button class="rpl" onclick="go()">↺ Replay</button>
+<script>
+let ts=[],ti,tv=0;
+function show(id){const e=document.getElementById(id);if(e){e.classList.add('on');e.scrollIntoView({behavior:'smooth',block:'nearest'})}}
+function go(){ts.forEach(clearTimeout);ts=[];clearInterval(ti);tv=0;document.getElementById('tmr').textContent='00:00';
+document.querySelectorAll('.m,.ac,.cta').forEach(e=>e.classList.remove('on'));
+document.getElementById('typ').classList.remove('on');
+ti=setInterval(()=>{tv++;const m=String(Math.floor(tv/60)).padStart(2,'0'),s=String(tv%60).padStart(2,'0');document.getElementById('tmr').textContent=m+':'+s},1000);
+const sq=[{id:'m1',d:1000},{id:'m2',d:3200},{id:'m3',d:5200},{id:'m4',d:7400},{id:'m5',d:9200},{id:'m6',d:13000},{id:'m7',d:15200},{id:'m8',d:18400},{id:'m9',d:20200},{id:'m10',d:23600}];
+sq.forEach((s,i)=>{if([0,2,4,6,8].includes(i)){const t=document.getElementById('typ');ts.push(setTimeout(()=>t.classList.add('on'),s.d-800));ts.push(setTimeout(()=>t.classList.remove('on'),s.d))}ts.push(setTimeout(()=>show(s.id),s.d))});
+ts.push(setTimeout(()=>clearInterval(ti),25000));
+[{id:'a1',d:21000},{id:'a2',d:22000},{id:'a3',d:23000},{id:'cta',d:25500}].forEach(a=>ts.push(setTimeout(()=>show(a.id),a.d)));}
+window.addEventListener('load',()=>setTimeout(go,500));
+</script>
+</body>
+</html>
