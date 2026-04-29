@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexCall AI — Live Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0D0D0D;--panel:#141414;--border:#2A2A2A;--el:#00E5FF;--eldim:rgba(0,229,255,0.08);--green:#00FF88;--amber:#FFB800;--red:#FF4444;--white:#F5F5F5;--muted:#666;--mid:#999}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:999}
+.hdr{width:100%;padding:15px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--panel)}
+.hlogo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem}.hlogo span{color:var(--el)}
+.htag{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.rec{display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--red);letter-spacing:.1em}
+.rdot{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.stage{max-width:860px;margin:0 auto;padding:36px 20px 0}
+.stitle{text-align:center;margin-bottom:36px;animation:fup .6s .3s ease both}
+.slbl{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.2em;color:var(--el);text-transform:uppercase;display:block;margin-bottom:10px}
+.stitle h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,5vw,3.4rem);letter-spacing:.04em;line-height:1}
+.stitle p{color:var(--muted);font-size:.88rem;margin-top:10px}
+@keyframes fup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.cwin{background:var(--panel);border:1px solid var(--border);border-radius:4px;overflow:hidden;animation:fup .5s .7s ease both}
+.csbar{background:#111;border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:14px}
+.spill{display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--green);background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.2);padding:4px 10px;border-radius:2px;letter-spacing:.08em}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s ease infinite}
+.smeta{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--muted);letter-spacing:.05em}
+.stimer{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--amber);letter-spacing:.1em}
+.wave{padding:14px 18px 0;display:flex;align-items:center;gap:3px;height:44px}
+.wb{width:3px;background:var(--el);border-radius:2px;opacity:.2;transition:height .1s ease}
+.trans{padding:22px 18px 26px;display:flex;flex-direction:column;gap:18px;min-height:300px}
+.msg{display:flex;gap:12px;align-items:flex-start;opacity:0;transform:translateY(8px)}
+.msg.show{animation:min .4s ease forwards}
+@keyframes min{to{opacity:1;transform:translateY(0)}}
+.msg.cx{flex-direction:row-reverse}
+.mav{width:34px;height:34px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.7rem;font-weight:500;flex-shrink:0;letter-spacing:.04em}
+.msg.ai .mav{background:var(--eldim);border:1px solid rgba(0,229,255,0.25);color:var(--el)}
+.msg.cx .mav{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--mid)}
+.mc{max-width:74%}
+.mn{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.msg.ai .mn{color:var(--el)}.msg.cx .mn{color:var(--muted);text-align:right}
+.mb{padding:11px 14px;border-radius:2px;font-size:.88rem;line-height:1.6;font-weight:300}
+.msg.ai .mb{background:var(--eldim);border:1px solid rgba(0,229,255,0.12);border-left:2px solid var(--el)}
+.msg.cx .mb{background:rgba(255,255,255,0.03);border:1px solid var(--border);color:#AAA;border-right:2px solid var(--border)}
+.typ{display:flex;gap:12px;align-items:center;opacity:0;transition:opacity .3s}
+.typ.show{opacity:1}
+.tdots{display:flex;gap:5px;padding:12px 16px;background:var(--eldim);border:1px solid rgba(0,229,255,0.12);border-left:2px solid var(--el);border-radius:2px}
+.tdots span{width:6px;height:6px;border-radius:50%;background:var(--el);opacity:.3;animation:td 1.2s ease infinite}
+.tdots span:nth-child(2){animation-delay:.2s}.tdots span:nth-child(3){animation-delay:.4s}
+@keyframes td{0%,60%,100%{opacity:.2;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.dpanel{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;animation:fup .5s 1s ease both}
+.dc{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:18px}
+.dct{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.dct::before{content:'';width:14px;height:1px;background:var(--el);flex-shrink:0}
+.dr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.8rem}
+.dr:last-child{border:none}
+.dk{color:var(--muted)}.dv{font-family:'IBM Plex Mono',monospace;font-size:.75rem;text-align:right}
+.dv.g{color:var(--green)}.dv.a{color:var(--amber)}.dv.e{color:var(--el)}
+.pbar{margin-top:8px}
+.pl{display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:5px}
+.pl span:first-child{color:var(--muted)}
+.pt{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden}
+.pf{height:100%;border-radius:2px;width:0%;transition:width 1.5s ease}
+.pf.g{background:var(--green)}.pf.e{background:var(--el)}
+.acard{background:var(--panel);border:1px solid rgba(0,255,136,0.18);border-left:3px solid var(--green);border-radius:4px;padding:16px 18px;display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(8px);transition:all .5s ease;margin-top:14px}
+.acard.show{opacity:1;transform:translateY(0)}
+.aic{width:38px;height:38px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.18);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.at{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:var(--green);text-transform:uppercase;margin-bottom:3px}
+.ad{font-size:.84rem;color:var(--mid);font-weight:300}
+.ack{font-size:1.1rem;color:var(--green);flex-shrink:0}
+.cta{text-align:center;padding:56px 20px 64px;opacity:0;transform:translateY(14px);transition:all .6s ease}
+.cta.show{opacity:1;transform:translateY(0)}
+.cta p{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+.cta h2{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(1.8rem,5vw,3rem);letter-spacing:.04em;margin-bottom:8px}
+.cta h2 span{color:var(--el)}
+.csub{font-size:.9rem;color:var(--muted);margin-bottom:28px;font-family:'DM Sans',sans-serif;text-transform:none!important;letter-spacing:0!important}
+.cbtn{display:inline-block;background:var(--el);color:#000;font-family:'Syne',sans-serif;font-size:1rem;letter-spacing:.1em;font-weight:800;padding:15px 44px;border-radius:2px;text-decoration:none;transition:all .2s}
+.cbtn:hover{box-shadow:0 0 36px rgba(0,229,255,0.4);transform:translateY(-2px)}
+.cfooter{margin-top:14px;font-size:.75rem;color:var(--muted)}
+.replay{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--border);color:var(--muted);font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;border-radius:2px;cursor:pointer;transition:all .2s;z-index:100}
+.replay:hover{border-color:var(--el);color:var(--el)}
+@media(max-width:600px){.dpanel{grid-template-columns:1fr}.hdr{padding:12px 16px}.htag{display:none}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hlogo">Nex<span>Call</span> AI</div>
+  <div class="htag">Live Agent Demo · Auto Repair</div>
+  <div class="rec"><span class="rdot"></span>REC</div>
+</div>
+<div class="stage">
+  <div class="stitle">
+    <span class="slbl">// scenario_001 — Inbound Customer Call</span>
+    <h1>AI Agent Handles<br>Auto Repair Call</h1>
+    <p>Status update · Upsell detected · Ticket upgraded · SMS sent</p>
+  </div>
+  <div class="cwin">
+    <div class="csbar">
+      <div class="spill"><span class="sdot"></span>LIVE CALL</div>
+      <span class="smeta">INBOUND · (813) 555-0192 · AUTO REPAIR PRO</span>
+      <span class="stimer" id="tmr">00:00</span>
+    </div>
+    <div class="wave" id="wave"></div>
+    <div class="trans" id="trans">
+      <div class="msg ai" id="m1"><div class="mav">AI</div><div class="mc"><div class="mn">NexCall Agent · Alex</div><div class="mb">Thank you for calling Auto Repair Pro! This is Alex. How can I help you today?</div></div></div>
+      <div class="msg cx" id="m2"><div class="mav">CX</div><div class="mc"><div class="mn">Customer</div><div class="mb">Hi — I dropped my car off yesterday. A 2019 Honda Civic. Is it ready yet?</div></div></div>
+      <div class="msg ai" id="m3"><div class="mav">AI</div><div class="mc"><div class="mn">NexCall Agent · Alex</div><div class="mb">Let me pull that up! Can I get your last name or the phone number on the account?</div></div></div>
+      <div class="msg cx" id="m4"><div class="mav">CX</div><div class="mc"><div class="mn">Customer</div><div class="mb">It's Martinez. Mike Martinez.</div></div></div>
+      <div class="msg ai" id="m5"><div class="mav">AI</div><div class="mc"><div class="mn">NexCall Agent · Alex</div><div class="mb">Got it Mike. Your Civic came in for a brake inspection and oil change. The oil change is done and ready — however our tech flagged your rear brake pads are at 15% and recommends replacement soon. Your current total is $89.</div></div></div>
+      <div class="msg cx" id="m6"><div class="mav">CX</div><div class="mc"><div class="mn">Customer</div><div class="mb">15%? That's low. How much would the brake pads cost if I did it now?</div></div></div>
+      <div class="msg ai" id="m7"><div class="mav">AI</div><div class="mc"><div class="mn">NexCall Agent · Alex</div><div class="mb">Rear brake pads for your Civic are $145 parts and labor. Since your car is already here there's no extra drop-off — we could have it done by 4 PM today. Want me to add that on?</div></div></div>
+      <div class="msg cx" id="m8"><div class="mav">CX</div><div class="mc"><div class="mn">Customer</div><div class="mb">Yeah let's do it — makes sense while it's already there.</div></div></div>
+      <div class="msg ai" id="m9"><div class="mav">AI</div><div class="mc"><div class="mn">NexCall Agent · Alex</div><div class="mb">Perfect! Brake replacement added. Your updated total is $234 and your car will be ready by 4 PM. I'll text you when it's done. Anything else, Mike?</div></div></div>
+      <div class="msg cx" id="m10"><div class="mav">CX</div><div class="mc"><div class="mn">Customer</div><div class="mb">No that's great, thanks!</div></div></div>
+      <div class="typ" id="typ"><div class="mav" style="width:34px;height:34px;background:var(--eldim);border:1px solid rgba(0,229,255,0.25);border-radius:2px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--el);flex-shrink:0;">AI</div><div class="tdots"><span></span><span></span><span></span></div></div>
+    </div>
+  </div>
+  <div class="dpanel">
+    <div class="dc">
+      <div class="dct">Call Intelligence</div>
+      <div class="dr"><span class="dk">Caller</span><span class="dv">Mike Martinez</span></div>
+      <div class="dr"><span class="dk">Vehicle</span><span class="dv">2019 Honda Civic</span></div>
+      <div class="dr"><span class="dk">Intent</span><span class="dv e">Status Check</span></div>
+      <div class="dr"><span class="dk">Upsell Detected</span><span class="dv a">Brake Pads</span></div>
+      <div class="dr"><span class="dk">Outcome</span><span class="dv g">Upsell Closed ✓</span></div>
+    </div>
+    <div class="dc">
+      <div class="dct">Revenue Impact</div>
+      <div class="dr"><span class="dk">Original Ticket</span><span class="dv">$89.00</span></div>
+      <div class="dr"><span class="dk">Upsell Added</span><span class="dv g">+$145.00</span></div>
+      <div class="dr"><span class="dk">Final Ticket</span><span class="dv e">$234.00</span></div>
+      <div class="dr"><span class="dk">Revenue Lift</span><span class="dv a">+163%</span></div>
+      <div class="pbar"><div class="pl"><span>Sentiment</span><span class="dv g" id="sv">—</span></div><div class="pt"><div class="pf g" id="sb"></div></div></div>
+      <div class="pbar" style="margin-top:8px"><div class="pl"><span>Resolved</span><span class="dv e" id="rv">—</span></div><div class="pt"><div class="pf e" id="rb"></div></div></div>
+    </div>
+  </div>
+  <div class="acard" id="a1"><div class="aic">📋</div><div><div class="at">CRM Updated</div><div class="ad">Work order updated — brake replacement added, pickup 4:00 PM</div></div><div class="ack">✓</div></div>
+  <div class="acard" id="a2"><div class="aic">📱</div><div><div class="at">SMS Sent</div><div class="ad">"Hi Mike, your Civic will be ready at 4 PM. Total: $234. — Auto Repair Pro"</div></div><div class="ack">✓</div></div>
+  <div class="acard" id="a3"><div class="aic">💰</div><div><div class="at">Upsell Captured</div><div class="ad">$145 brake service closed — no human rep needed</div></div><div class="ack">✓</div></div>
+  <div class="cta" id="cta">
+    <p>// ready to deploy for your business?</p>
+    <h2>Book Your <span>Free Demo</span></h2>
+    <p class="csub">See your AI agent on your actual calls — live in 48 hours.</p>
+    <a href="mailto:Tampamorris@gmail.com" class="cbtn">BOOK A FREE DEMO</a>
+    <p class="cfooter">No credit card · No commitment · (813) 444-8663</p>
+  </div>
+</div>
+<button class="replay" onclick="go()">↺ Replay</button>
+<script>
+let tos=[],ti,wi,tv=0;
+const wv=document.getElementById('wave');
+for(let i=0;i<55;i++){const b=document.createElement('div');b.className='wb';b.style.height='4px';wv.appendChild(b)}
+function aw(on){clearInterval(wi);const bs=wv.querySelectorAll('.wb');if(on){wi=setInterval(()=>{bs.forEach(b=>{b.style.height=(Math.random()*26+4)+'px';b.style.opacity=(0.3+Math.random()*0.7).toString()})},90)}else{bs.forEach(b=>{b.style.height='4px';b.style.opacity='0.15'})}}
+function st(){ti=setInterval(()=>{tv++;const m=String(Math.floor(tv/60)).padStart(2,'0'),s=String(tv%60).padStart(2,'0');document.getElementById('tmr').textContent=m+':'+s},1000)}
+function show(id,wave){const e=document.getElementById(id);if(e){e.classList.add('show');e.scrollIntoView({behavior:'smooth',block:'nearest'});aw(wave)}}
+function typ(d){const t=document.getElementById('typ');tos.push(setTimeout(()=>t.classList.add('show'),d-900));tos.push(setTimeout(()=>t.classList.remove('show'),d))}
+function go(){tos.forEach(t=>clearTimeout(t));tos=[];clearInterval(ti);clearInterval(wi);tv=0;document.getElementById('tmr').textContent='00:00';
+document.querySelectorAll('.msg,.acard,.cta').forEach(e=>e.classList.remove('show'));
+document.getElementById('typ').classList.remove('show');
+document.getElementById('sb').style.width='0%';document.getElementById('sv').textContent='—';
+document.getElementById('rb').style.width='0%';document.getElementById('rv').textContent='—';
+aw(false);
+const seq=[{id:'m1',d:1200,w:true},{id:'m2',d:3600,w:false},{id:'m3',d:5800,w:true},{id:'m4',d:8000,w:false},{id:'m5',d:9800,w:true},{id:'m6',d:13800,w:false},{id:'m7',d:16000,w:true},{id:'m8',d:19200,w:false},{id:'m9',d:21000,w:true},{id:'m10',d:24600,w:false}];
+st();
+seq.forEach((s,i)=>{if([0,2,4,6,8].includes(i))typ(s.d);tos.push(setTimeout(()=>show(s.id,s.w),s.d))});
+tos.push(setTimeout(()=>{aw(false);clearInterval(ti)},26500));
+tos.push(setTimeout(()=>{document.getElementById('sb').style.width='92%';document.getElementById('sv').textContent='92%';document.getElementById('rb').style.width='100%';document.getElementById('rv').textContent='100%'},26000));
+[{id:'a1',d:21500},{id:'a2',d:22500},{id:'a3',d:23500}].forEach(a=>tos.push(setTimeout(()=>document.getElementById(a.id).classList.add('show'),a.d)));
+tos.push(setTimeout(()=>document.getElementById('cta').classList.add('show'),27000));}
+window.addEventListener('load',()=>setTimeout(go,600));
+</script>
+</body>
+</html>
